@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>동백꽃 만들기 - O/X 퀴즈</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f7;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px 16px;
+        }
+        .card {
+            background: white;
+            width: 100%;
+            max-width: 360px;
+            padding: 30px 20px;
+            border-radius: 20px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+            text-align: center;
+        }
+        .progress-text {
+            font-size: 0.85rem;
+            color: #e63946;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .quiz-title {
+            font-size: 1.2rem;
+            color: #1d1d1f;
+            margin-bottom: 24px;
+            word-break: keep-all;
+            line-height: 1.4;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* O/X 버튼 영역 */
+        .ox-container {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .ox-btn {
+            flex: 1;
+            padding: 20px 0;
+            font-size: 2rem;
+            font-weight: 800;
+            border: 2px solid #e5e5ea;
+            border-radius: 16px;
+            background-color: #fafafa;
+            cursor: pointer;
+            transition: all 0.1s ease;
+        }
+        .ox-btn.o-btn { color: #0071e3; }
+        .ox-btn.x-btn { color: #e63946; }
+        .ox-btn:active {
+            transform: scale(0.96);
+            background-color: #f2f2f7;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <div class="progress-text">오늘의 동백 퀴즈</div>
+        <div id="question" class="quiz-title">문제를 불러오는 중...</div>
+
+        <div class="ox-container">
+            <button class="ox-btn o-btn" onclick="submitAnswer('O')">O</button>
+            <button class="ox-btn x-btn" onclick="submitAnswer('X')">X</button>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // 💡 [퀴즈 문제 및 정답/해설 설정]
+        // ==========================================
+        const quizData = [
+            {
+                question: "1번 문제: 제주 4·3 사건은 1948년 4월 3일에 시작되었다.",
+                answer: "O",
+                explanation: "제주 4·3 사건은 1948년 4월 3일에 시작되었다."
+            },
+            {
+                question: "2번 문제: 1947년 3월 1일 발포 사건은 제주 4·3의 계기가 되었다.",
+                answer: "O",
+                explanation: "1947년 3월 1일 발포 사건은 제주 4·3의 계기가 되었다."
+            },
+            {
+                question: "3번 문제: 제주 4·3 사건은 한국전쟁 이후에 발생했다.",
+                answer: "X",
+                explanation: "한국전쟁보다 이전에 발생."
+            }
+        ];
+        // ==========================================
+
+        let selectedQuiz = null;
+
+        // 랜덤 문제 선택
+        function loadRandomQuiz() {
+            const randomIndex = Math.floor(Math.random() * quizData.length);
+            selectedQuiz = quizData[randomIndex];
+            document.getElementById('question').textContent = selectedQuiz.question;
+        }
+
+        // O / X 선택 시 동작
+        function submitAnswer(userChoice) {
+            const isCorrect = (userChoice === selectedQuiz.answer);
+
+            if (isCorrect) {
+                alert(`⭕ 정답입니다!\n\n• 정답: ${selectedQuiz.answer}\n\n💡 해설: ${selectedQuiz.explanation}`);
+            } else {
+                alert(`❌ 오답입니다!\n\n• 제출한 답: ${userChoice}\n• 실제 정답: ${selectedQuiz.answer}\n\n💡 해설: ${selectedQuiz.explanation}`);
+            }
+
+            // 💡 정답/오답 구분 없이 무조건 꽃이 핀 결과 페이지(flower-result.html)로 이동
+            window.location.href = 'flower-result.html';
+        }
+
+        // 페이지 열릴 때 퀴즈 로드
+        loadRandomQuiz();
+    </script>
+</body>
+</html>

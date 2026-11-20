@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>실시간 누적 동백나무</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f7;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px 16px;
+        }
+        .card {
+            background: white;
+            width: 100%;
+            max-width: 360px;
+            padding: 30px 20px;
+            border-radius: 20px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+            text-align: center;
+        }
+        .tree-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #1d1d1f;
+            margin-bottom: 6px;
+        }
+        .user-subtext {
+            font-size: 0.9rem;
+            color: #6e6e73;
+            margin-bottom: 8px;
+        }
+        .flower-count {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #e63946;
+            margin-bottom: 20px;
+        }
+
+        .tree-container {
+            position: relative;
+            width: 100%;
+            max-width: 240px;
+            margin: 10px auto 25px auto;
+        }
+
+        .base-tree {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .flower-item {
+            position: absolute;
+            width: 32px;
+            height: 32px;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            animation: popIn 0.4s ease-out;
+        }
+
+        @keyframes popIn {
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+
+        .home-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #0071e3;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .home-btn:active {
+            background-color: #0077ed;
+        }
+    </style>
+
+    <!-- Firebase SDK 라이브러리 -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <!-- 설정값은 git에 올리지 않는 firebase-config.js 에 보관 -->
+    <script src="firebase-config.js"></script>
+</head>
+<body>
+
+    <div class="card">
+        <div id="display-tree-title" class="tree-title">대학교 동백나무</div>
+        <div id="display-nickname" class="user-subtext">모두의 참여로 꽃이 피어납니다!</div>
+        <div id="flower-count" class="flower-count">꽃들을 불러오는 중... 🌺</div>
+
+        <div id="tree-container" class="tree-container">
+            <!-- 💡 바탕 나무 이미지를 tree.jpg 로 변경 완료 -->
+            <img src="tree.jpg" alt="바탕 나무" class="base-tree">
+        </div>
+
+        <button class="home-btn" onclick="location.href='index.html'">처음 화면으로</button>
+    </div>
+
+    <script>
+
+        // Firebase 초기화
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // 사용자 정보 불러오기
+        const univ = localStorage.getItem('userUniv') || 'OO대학교';
+        const nickname = localStorage.getItem('userNickname') || '익명';
+
+        // 특수문자를 제거한 데이터베이스 키 생성
+        const cleanUnivName = univ.replace(/[.#$/[\]]/g, "_");
+
+        document.getElementById('display-tree-title').textContent = `${univ} 동백나무`;
+        document.getElementById('display-nickname').textContent = `${nickname} 님이 나무에 꽃을 피웠습니다!`;
+
+        const univRef = database.ref('trees/' + cleanUnivName);
+
+        // 현재 세션 중복 추가 방지 후 랜덤 위치에 꽃 저장
+        const hasAdded = sessionStorage.getItem('flowerAdded');
+        if (!hasAdded) {
+            const randomTop = Math.floor(Math.random() * 35) + 20;  // Top 20%~55% 범위
+            const randomLeft = Math.floor(Math.random() * 45) + 25; // Left 25%~70% 범위
+
+            univRef.push({
+                top: randomTop,
+                left: randomLeft,
+                createdAt: Date.now()
+            });
+
+            sessionStorage.setItem('flowerAdded', 'true');
+        }
+
+        // 실시간 데이터 동기화
+        univRef.on('value', (snapshot) => {
+            const container = document.getElementById('tree-container');
+            
+            // 기존 생성된 꽃 제거
+            const oldFlowers = container.querySelectorAll('.flower-item');
+            oldFlowers.forEach(flower => flower.remove());
+
+            const data = snapshot.val();
+            if (data) {
+                const flowerArray = Object.values(data);
+                document.getElementById('flower-count').textContent = `총 ${flowerArray.length}송이의 동백꽃이 피어있습니다 🌺`;
+
+                flowerArray.forEach(flower => {
+                    const img = document.createElement('img');
+                    // 💡 꽃 이미지를 flower.png 로 지정
+                    img.src = 'flower.png';
+                    img.className = 'flower-item';
+                    img.style.top = `${flower.top}%`;
+                    img.style.left = `${flower.left}%`;
+                    img.alt = '동백꽃';
+                    container.appendChild(img);
+                });
+            } else {
+                document.getElementById('flower-count').textContent = `아직 피어난 꽃이 없습니다. 첫 꽃을 피워보세요! 🌺`;
+            }
+        });
+    </script>
+</body>
+</html>

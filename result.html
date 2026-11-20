@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>설정 완료</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f5f5f7;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px 16px;
+        }
+        .card {
+            background: white;
+            width: 100%;
+            max-width: 360px;
+            padding: 30px 20px;
+            border-radius: 20px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+            text-align: center;
+        }
+        .tree-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #1d1d1f;
+            margin-bottom: 6px;
+            word-break: keep-all;
+        }
+        .user-subtext {
+            font-size: 0.9rem;
+            color: #6e6e73;
+            margin-bottom: 20px;
+        }
+        
+        /* 💡 이미지 및 중앙 버튼 배치 영역 */
+        .tree-container {
+            position: relative; /* 버튼의 위치 기준점 */
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 15px 0 25px 0;
+        }
+        .tree-image {
+            width: 100%;
+            max-width: 200px;
+            height: auto;
+            object-fit: contain;
+            display: block;
+        }
+
+        /* 💡 나무 정중앙 버튼 스타일 */
+        .flower-btn {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%); /* 정확히 정중앙 정렬 */
+            background-color: #e63946; /* 동백꽃 느낌의 붉은색 */
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(230, 57, 70, 0.35);
+            white-space: nowrap;
+        }
+        .flower-btn:active {
+            transform: translate(-50%, -50%) scale(0.95);
+            background-color: #d62828;
+        }
+
+        .back-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #f2f2f7;
+            color: #1d1d1f;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            -webkit-appearance: none;
+        }
+        .back-btn:active {
+            background-color: #e5e5ea;
+        }
+
+        @media (max-width: 340px) {
+            .card { padding: 24px 16px; }
+            .tree-title { font-size: 1.15rem; }
+            .tree-image { max-width: 160px; }
+            .flower-btn { font-size: 0.8rem; padding: 8px 14px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <div id="display-tree-title" class="tree-title">대학교 동백나무</div>
+        <div id="display-nickname" class="user-subtext">닉네임 님의 공간</div>
+
+        <div class="tree-container">
+            <!-- 💡 준비한 나무 이미지 파일명으로 수정하세요 -->
+            <img src="tree.jpg" alt="내 나무" class="tree-image">
+            
+            <!-- 💡 이미지 중앙 동백꽃 만들기 버튼 -->
+            <button class="flower-btn" onclick="location.href='make-flower.html'">동백꽃 만들기</button>
+        </div>
+
+        <button class="back-btn" onclick="location.href='index.html'">다시 설정하기</button>
+    </div>
+
+    <script>
+        const nickname = localStorage.getItem('userNickname') || '방문자';
+        const univ = localStorage.getItem('userUniv') || 'OO대학교';
+
+        document.getElementById('display-tree-title').textContent = `${univ} 동백나무`;
+        document.getElementById('display-nickname').textContent = `${nickname} 님의 공간`;
+    </script>
+</body>
+</html>
